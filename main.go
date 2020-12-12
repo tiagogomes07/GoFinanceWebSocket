@@ -4,15 +4,20 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	socketio "github.com/googollee/go-socket.io"
 	"github.com/googollee/go-socket.io/engineio"
 	"github.com/googollee/go-socket.io/engineio/transport"
 	"github.com/googollee/go-socket.io/engineio/transport/polling"
 	"github.com/googollee/go-socket.io/engineio/transport/websocket"
-	"github.com/rs/cors"
 
 	"github.com/gorilla/mux"
+
+	"github.com/rs/cors"
+
+	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 )
 
 func main() {
@@ -67,20 +72,36 @@ func main() {
 
 	mux := mux.NewRouter()
 
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	mux.Handle("/socket.io/", server)
+	mux.HandleFunc("/", index)
 
-		w.Header().Set("Content-Type", "application/json")
-		//w.Write([]byte("{\"hello\": \"world\"}"))
+	// mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 
-		index(w, r)
+	// 	w.Header().Set("Content-Type", "application/json")
+	// 	w.Write([]byte("{\"hello\": \"world\"}"))
+
+	// 	//index(w, r)
+	// })
+
+	//
+
+	// log.Println("Serving at localhost:PORT " + PORT)
+	// //cors.AllowAll().Handler(mux))
+	// log.Fatal(http.ListenAndServe(PORT, mux))
+
+	handler := cors.Default().Handler(mux)
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowCredentials: true,
 	})
 
-	mux.Handle("/socket.io/", cors.AllowAll().Handler(server))
+	handler = c.Handler(handler)
 
-	log.Println("Serving at localhost:8181...")
+	godotenv.Load(".env")
+	PORT := ":" + os.Getenv("PORT")
 
-	log.Fatal(http.ListenAndServe(":8181", cors.AllowAll().Handler(mux)))
-
+	log.Println("Serving at localhost" + PORT + "...")
+	log.Fatal(http.ListenAndServe(PORT, handler))
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
@@ -91,20 +112,3 @@ func index(w http.ResponseWriter, r *http.Request) {
 	}
 	http.ServeFile(w, r, p)
 }
-
-// func (s *customServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("Access-Control-Allow-Credentials", "true")
-// 	origin := r.Header.Get("Origin")
-// 	w.Header().Set("Access-Control-Allow-Origin", origin)
-// 	s.Server.ServeHTTP(w, r)
-// }
-
-// func handler(w http.ResponseWriter, req *http.Request) {
-// 	// ...
-// 	enableCors(&w)
-// 	// ...
-// }
-
-// func enableCors(w *http.ResponseWriter) {
-// 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
-// }
