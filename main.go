@@ -26,7 +26,7 @@ func main() {
 			polling.Default,
 			&websocket.Transport{
 				CheckOrigin: func(r *http.Request) bool {
-					return true
+					return false
 				},
 			},
 		},
