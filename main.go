@@ -59,8 +59,6 @@ func getStock(w http.ResponseWriter, r *http.Request) {
 		}
 		log.Printf("recv: %s", message)
 
-		
-
 
 		err = c.WriteMessage(mt, message)
 		if err != nil {
