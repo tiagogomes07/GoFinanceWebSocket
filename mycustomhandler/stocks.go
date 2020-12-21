@@ -3,7 +3,7 @@ package mycustomhandler
 import (
 	"GoSocket/tickerdetails"
 	"GoSocket/userauthentication"
-	"fmt"
+
 	"log"
 	"net/http"
 
@@ -26,7 +26,7 @@ func GetStock(w http.ResponseWriter, r *http.Request) {
 		log.Print("upgrade:", err)
 		return
 	}
-	fmt.Println("getStock")
+	log.Println("getStock")
 
 	for {
 
@@ -36,27 +36,32 @@ func GetStock(w http.ResponseWriter, r *http.Request) {
 		}
 		mt, userMessage, err := c.ReadMessage()
 
-		fmt.Println("reciving ticker " + string(userMessage))
+		log.Println("reciving ticker " + string(userMessage))
 
 		userObj := string(userMessage)
 		userSession, err := userauthentication.GetSession(userObj)
 
+		log.Println("user logged", userSession.UserID, "try getting", userSession.Ticker)
+		
 		if err != nil {
+			log.Println(err.Error())
 			c.WriteMessage(1, []byte("User not connected"))
 			defer c.Close()
 			return
 		}
 
-		if !userSession.ScoketGetPriceOn {
-			go tickerdetails.SendStocksPrices(c, mt, string(userMessage))
-			userauthentication.StartedSockectGetPrice(string(userMessage))
-		}
+		go tickerdetails.SendStocksPrices(c, mt, string(userMessage))
+		//userauthentication.StartedSockectGetPrice(string(userMessage))
+		//if !userSession.ScoketGetPriceOn {
+		//	go tickerdetails.SendStocksPrices(c, mt, string(userMessage))
+		//	userauthentication.StartedSockectGetPrice(string(userMessage))
+		//}
 
 		if err != nil {
 			log.Println("write:", err)
 			break
 		}
-		fmt.Println("finalized for")
+		log.Println("finalized for")
 	}
-	fmt.Println("finalized")
+	log.Println("finalized")
 }

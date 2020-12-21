@@ -1,7 +1,8 @@
 package model
 
 type UserSession struct {
-	UserId           string
+	UserID           string
 	Loged            bool
 	ScoketGetPriceOn bool
+	Ticker           string
 }

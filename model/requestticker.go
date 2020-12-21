@@ -1,7 +1,7 @@
 package model
 
 type RequestTicker struct {
-	UserID    string
+	//	UserID    string
 	Ticker    string
 	Value     float32
 	Variation float32
