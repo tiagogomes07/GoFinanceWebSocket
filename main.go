@@ -19,6 +19,7 @@ func main() {
 	fmt.Println("iniciando")
 
 	port := os.Getenv("PORT")
+	fmt.Println("Port?", port)
 	//host := fmt.Sprint("localhost:", port)
 
 	//addr := flag.String("addr", host, "http service address")
