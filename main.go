@@ -5,7 +5,6 @@ import (
 	"flag"
 	"log"
 	"net/http"
-	"os"
 
 	"fmt"
 )
@@ -18,7 +17,7 @@ func main() {
 	http.HandleFunc("/", index)
 	fmt.Println("iniciando")
 
-	port := os.Getenv("PORT")
+	port := "5000"
 	fmt.Println("Port?", port)
 	//host := fmt.Sprint("localhost:", port)
 
