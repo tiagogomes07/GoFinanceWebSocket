@@ -2,10 +2,10 @@ package main
 
 import (
 	"GoSocket/mycustomhandler"
-
 	"flag"
 	"log"
 	"net/http"
+	"os"
 
 	"fmt"
 )
@@ -17,7 +17,11 @@ func main() {
 	http.HandleFunc("/auth", mycustomhandler.Authentication)
 	http.HandleFunc("/", index)
 	fmt.Println("iniciando")
-	addr := flag.String("addr", "localhost:5000", "http service address")
+
+	port := os.Getenv("PORT")
+	host := fmt.Sprint("localhost:", port)
+
+	addr := flag.String("addr", host, "http service address")
 	log.Fatal(http.ListenAndServe(*addr, nil))
 }
 
