@@ -42,20 +42,15 @@ func GetStock(w http.ResponseWriter, r *http.Request) {
 		userSession, err := userauthentication.GetSession(userObj)
 
 		log.Println("user logged", userSession.UserID, "try getting", userSession.Ticker)
-		
+
 		if err != nil {
-			log.Println(err.Error())
+			//log.Println(err.Error())
 			c.WriteMessage(1, []byte("User not connected"))
 			defer c.Close()
 			return
 		}
 
 		go tickerdetails.SendStocksPrices(c, mt, string(userMessage))
-		//userauthentication.StartedSockectGetPrice(string(userMessage))
-		//if !userSession.ScoketGetPriceOn {
-		//	go tickerdetails.SendStocksPrices(c, mt, string(userMessage))
-		//	userauthentication.StartedSockectGetPrice(string(userMessage))
-		//}
 
 		if err != nil {
 			log.Println("write:", err)

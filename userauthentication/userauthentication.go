@@ -34,7 +34,7 @@ func StoreSession(userid string) bool {
 	//var ctx = context.Background()
 	//defer ctx.Done()
 	redisClient.Set(userid, string(data), 10*time.Minute)
-	defer redisClient.Close()
+	//defer redisClient.Close()
 	return true
 }
 
@@ -46,7 +46,7 @@ func StartedSockectGetPrice(userid string) {
 		ScoketGetPriceOn: true,
 	}
 	data, _ := json.Marshal(user)
-	defer redisClient.Close()
+	//defer redisClient.Close()
 	redisClient.Set(userid, data, 10*time.Minute)
 }
 
@@ -57,7 +57,7 @@ func StopSockectGetPrice(userID string) {
 		ScoketGetPriceOn: false,
 	}
 	data, _ := json.Marshal(user)
-	defer redisClient.Close()
+	//defer redisClient.Close()
 	redisClient.Set(userID, data, 10*time.Minute)
 }
 
@@ -67,9 +67,9 @@ func GetSession(userRequest string) (*model.UserSession, error) {
 	user := &model.UserSession{}
 	json.Unmarshal([]byte(userRequest), user)
 	redisClient := redisacess.GetRedisClient()
-	defer redisClient.Close()
+	//defer redisClient.Close()
 
-	fmt.Println("trying get userID" + user.UserID)
+	fmt.Println("trying get userID " + user.UserID)
 	res := redisClient.Get(user.UserID)
 
 	userString := res.Val()
@@ -85,11 +85,4 @@ func GetSession(userRequest string) (*model.UserSession, error) {
 	}
 
 	return user, nil
-}
-
-//CloseSession to clean user session
-func CloseSession(userID string) {
-	redisClient := redisacess.GetRedisClient()
-	redisClient.Del(userID)
-	defer redisClient.Close()
 }

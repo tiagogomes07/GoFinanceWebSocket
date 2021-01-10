@@ -2,29 +2,41 @@ package redisacess
 
 import (
 	"os"
-	"time"
+
+	"sync"
 
 	"github.com/go-redis/redis"
 	"github.com/joho/godotenv"
 )
 
-//GetRedisClient here
-func GetRedisClient() redis.Client {
+var lock = &sync.Mutex{}
 
-	var redisClient *redis.Client
-	//var ctx = context.Background()
-	godotenv.Load()
+var (
+	instance *redis.Client
+)
 
-	host := os.Getenv("REDISHOST")
-	port := os.Getenv("REDISPORT")
-	password := os.Getenv("REDISPASSWORD")
+//GetRedisClient
+func GetRedisClient() *redis.Client {
 
-	redisClient = redis.NewClient(&redis.Options{
-		Addr:        host + ":" + port,
-		Password:    password,
-		DB:          0,
-		DialTimeout: 10 * time.Minute,
-	})
+	lock.Lock()
+	defer lock.Unlock()
 
-	return *redisClient
+	if instance == nil {
+		println("instance redis client")
+		godotenv.Load()
+
+		host := os.Getenv("REDISHOST")
+		port := os.Getenv("REDISPORT")
+		password := os.Getenv("REDISPASSWORD")
+
+		instance = redis.NewClient(&redis.Options{
+			Addr:     host + ":" + port,
+			Password: password,
+			DB:       0,
+			//DialTimeout: 10 * time.Minute,
+		})
+
+	}
+
+	return instance
 }

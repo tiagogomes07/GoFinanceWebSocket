@@ -31,7 +31,7 @@ func GetTickerCurrentPrice(userRequest string) (model.RequestTicker, error) {
 
 	json.Unmarshal([]byte(string(requestedTicker)), &requestTicker)
 
-	defer redisClient.Close()
+	//defer redisClient.Close()
 
 	return requestTicker, nil
 }
